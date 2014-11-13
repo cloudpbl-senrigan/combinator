@@ -1,7 +1,6 @@
 {
   'includes': [
     'common.gypi',
-    '../combinator/combinator.gypi',
   ],
   'targets': [
     {
