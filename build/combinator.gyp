@@ -13,6 +13,7 @@
       'sources':
       [
         '../combinator/main.cpp',
+        '../combinator/combinator.cpp',
       ],
       'link_settings': {
         'libraries': [
