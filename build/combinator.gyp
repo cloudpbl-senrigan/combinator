@@ -13,7 +13,12 @@
       'sources':
       [
         '../combinator/main.cpp',
-      ]
+      ],
+      'link_settings': {
+        'libraries': [
+          '-lmysqlcppconn'
+        ],
+      }
     }
   ]
 }
