@@ -4,7 +4,6 @@
 
 int main(int argc, char* argv[])
 {
-  Combinator combinator();
-  combinator.run(argc, argv);
-  return 0;
+  senrigan::Combinator combinator;
+  return combinator.run(argc, argv);
 }

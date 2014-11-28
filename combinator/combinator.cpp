@@ -12,34 +12,56 @@
 
 #include <iostream>
 #include <memory>
+#include <vector>
 
-#include <cppconn/connection.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-#include <mysql_connection.h>
-#include <mysql_driver.h>
+#include "cmdline.h"
+#include "crawler.h"
+#include "image.h"
+#include "mysqldatabase.h"
+#include "processor.h"
 
-const std::string Combinator::DBNAME = "testdb";
+using namespace senrigan;
+using namespace std;
 
-void printResponse(sql::ResultSet *raw_results)
+int Combinator::run(int argc, const char * const argv[])
 {
-  std::shared_ptr<sql::ResultSet> results(raw_results);
-  while (results->next()) {
-    std::cout << "id: " << results->getString("id") << ", "
-              << "label: " << results->getString("label")
-              << std::endl;
+  cmdline::parser parser;
+  parser.add<string>(
+      "database", 'd',
+      "path to database settings in yaml",
+      false,
+      string("config/database.yml"));
+  parser.add("help", 'h', "print help");
+  
+  if (!parser.parse(argc, argv) || parser.exist("help")) {
+    cout << parser.error_full() << parser.usage();
+    return 1;
   }
-}
 
-void Combinator::run(int argc, char *argv[])
-{
-  auto driver = sql::mysql::get_mysql_driver_instance();
-  std::shared_ptr<sql::Connection> con(
-    driver->connect("tcp://127.0.0.1:3306", "root", "hogehoge"));
-  std::shared_ptr<sql::Statement> statement(con->createStatement());
+  string yaml_path = parser.get<string>("database");
 
-  statement->execute(std::string("use ") + DBNAME);
-  statement->execute("insert into test (id, label) values (1, 'x')");
+  cout << "yaml: " << yaml_path << endl;
 
-  printResponse(statement->executeQuery("select * from test"));
+  // Configure each components
+  shared_ptr<Database> database(new MySQLDatabase(yaml_path));
+  Crawler crawler(database);
+  Processor processor(database);
+
+  // Crawl
+  crawler.crawl();
+  cout << "isArrivedNewData: " << crawler.isArrivedNewData() << endl;
+  // Process
+  vector<Image> images;
+  images.push_back(Image());
+  images = processor.process(images);
+
+  // Print the number of elements in [[images]] (for test)
+  int i = 0;
+  for (auto image : images) {
+    cout << "image[" << i++ << "]" << endl;
+  }
+  
+  return 0;
+  
+  // return 0;
 }

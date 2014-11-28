@@ -1,5 +1,5 @@
 /* 
- * combinator.h
+ * mysqlresultset.cpp
  * 
  * Author:   Makoto Shimazu <makoto.shimaz@gmail.com>
  * URL:      https://amiq11.tumblr.com               
@@ -8,18 +8,14 @@
  *  
  */
 
-#pragma once
+#include "mysqlresultset.h"
 
-#include <string>
+#include "debug.h"
 
-namespace senrigan
+using namespace senrigan;
+
+MySQLResultSet::MySQLResultSet(sql::ResultSet *raw_results) :
+  results_(raw_results)
 {
-
-class Combinator
-{
-public:
-  int run(int argc, const char * const argv[]);
-
-};
-
+  DCHECK(raw_results != nullptr);
 }

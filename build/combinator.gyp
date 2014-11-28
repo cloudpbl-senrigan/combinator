@@ -12,8 +12,12 @@
       ],
       'sources':
       [
-        '../combinator/main.cpp',
         '../combinator/combinator.cpp',
+        '../combinator/crawler.cpp',
+        '../combinator/main.cpp',
+        '../combinator/mysqldatabase.cpp',
+        '../combinator/mysqlresultset.cpp',
+        '../combinator/processor.cpp',
       ],
       'link_settings': {
         'libraries': [

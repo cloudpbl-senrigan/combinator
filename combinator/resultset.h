@@ -1,5 +1,5 @@
 /* 
- * combinator.h
+ * resultset.h
  * 
  * Author:   Makoto Shimazu <makoto.shimaz@gmail.com>
  * URL:      https://amiq11.tumblr.com               
@@ -15,11 +15,13 @@
 namespace senrigan
 {
 
-class Combinator
+class ResultSet
 {
 public:
-  int run(int argc, const char * const argv[]);
-
+  virtual bool next() { return false; }
+  virtual std::string getString(std::string &key) { return ""; }
+  virtual int32_t getInt(std::string &key) { return 0; }
+  virtual bool getBoolean(std::string &key) { return true; }
 };
 
-}
+} // namespace senrigan

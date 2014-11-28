@@ -1,5 +1,5 @@
 /* 
- * combinator.h
+ * database.h
  * 
  * Author:   Makoto Shimazu <makoto.shimaz@gmail.com>
  * URL:      https://amiq11.tumblr.com               
@@ -12,14 +12,17 @@
 
 #include <string>
 
+#include "resultset.h"
+
 namespace senrigan
 {
 
-class Combinator
+class Database
 {
 public:
-  int run(int argc, const char * const argv[]);
-
+  virtual bool open() = 0;
+  virtual void close() = 0;
+  virtual ResultSet execute(const std::string &sql) = 0;
 };
 
-}
+};
