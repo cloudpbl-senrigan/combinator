@@ -10,59 +10,64 @@
 
 #include "mysqldatabase.h"
 
+#include <iostream>
+
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 #include <mysql_connection.h>
 #include <mysql_driver.h>
+#include <yaml-cpp/yaml.h>
+
+#include "mysqlresultset.h"
 
 using namespace senrigan;
 using namespace std;
 
-const string MySQLDatabase::DBNAME = "testdb";
-
-static string dirname(const string& path)
-{
-    return path.substr(0, path.find_last_of('/'));
-}
-
-static void printResponse(sql::ResultSet *raw_results)
-{
-  shared_ptr<sql::ResultSet> results(raw_results);
-  while (results->next()) {
-    cout << "id: " << results->getString("id") << ", "
-         << "label: " << results->getString("label")
-         << endl;
-  }
-}
-
 MySQLDatabase::MySQLDatabase(const std::string &yaml_path)
 {
-  // TODO: Settings must be read from yaml file
+  // Load yaml
+  YAML::Node config = YAML::LoadFile(yaml_path);
+
+  // Validate settings
+  if (!(config["database"] &&
+        config["database"]["user"] &&
+        config["database"]["password"] &&
+        config["database"]["host"] &&
+        config["database"]["dbname"])) {
+    throw "Config file must set the parameters: "
+          "{database: {user:, password:, host:, dbname:}}";
+  }
+
+  const YAML::Node &dbconfig = config["database"];
+
+  // Connect to mysql
   auto driver = sql::mysql::get_mysql_driver_instance();
   shared_ptr<sql::Connection> connection(
-    driver->connect("tcp://127.0.0.1:3306", "root", "hogehoge"));
-  shared_ptr<sql::Statement> statement(connection->createStatement());
+      driver->connect(dbconfig["host"].as<string>(),
+                      dbconfig["user"].as<string>(),
+                      dbconfig["password"].as<string>()));
+
+  // Set member variables
+  dbname_ = dbconfig["dbname"].as<string>();
   connection_ = connection;
-  statement_ = statement;
 }
 
 bool MySQLDatabase::open()
 {
-  // TODO: Implement here
+  // TODO: Check if this is succeeded
+  shared_ptr<sql::Statement> statement(connection_->createStatement());
+  statement_ = statement;
+  statement_->execute(string("use ") + dbname_);
   return true;
 }
 
 void MySQLDatabase::close()
 {
-  // TODO: Implement here
 }
 
 ResultSet MySQLDatabase::execute(const std::string &sql)
 {
-  // TODO: Implement here; this is just a placeholder
-  statement_->execute(string("use ") + DBNAME);
-  statement_->execute("insert into test (id, label) values (1, 'x')");
-  statement_->executeQuery("select * from test");
-  return ResultSet();
+  return MySQLResultSet(
+    statement_->executeQuery(sql));
 }

@@ -1,5 +1,5 @@
 database:
     user: user
-    pass: password
+    password: password
     host: 127.0.0.1:3306
     dbname: database

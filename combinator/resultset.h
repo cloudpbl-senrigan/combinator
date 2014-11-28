@@ -19,9 +19,12 @@ class ResultSet
 {
 public:
   virtual bool next() { return false; }
-  virtual std::string getString(std::string &key) { return ""; }
-  virtual int32_t getInt(std::string &key) { return 0; }
-  virtual bool getBoolean(std::string &key) { return true; }
+  virtual std::string getString(const std::string &key) { return ""; }
+  std::string getString(const char *key) { return getString(key); }
+  virtual int32_t getInt(const std::string &key) { return 0; }
+  int32_t getInt(const char *key) { return getInt(std::string(key)); }
+  virtual bool getBoolean(const std::string &key) { return true; }
+  bool getBoolean(const char *key) { return getBoolean(key); }
 };
 
 } // namespace senrigan

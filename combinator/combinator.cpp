@@ -39,7 +39,6 @@ int Combinator::run(int argc, const char * const argv[])
   }
 
   string yaml_path = parser.get<string>("database");
-
   cout << "yaml: " << yaml_path << endl;
 
   // Configure each components
@@ -60,8 +59,13 @@ int Combinator::run(int argc, const char * const argv[])
   for (auto image : images) {
     cout << "image[" << i++ << "]" << endl;
   }
-  
+
+  // Execute query (for test)
+  database->open();
+  ResultSet results = database->execute("select count(*) as c from test;");
+  database->close();
+  if (results.next()) {
+    cout << "'select count(*) as c from test': " << results.getInt("c") << endl;
+  }
   return 0;
-  
-  // return 0;
 }

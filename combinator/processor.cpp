@@ -20,6 +20,8 @@ Processor::Processor(std::shared_ptr<Database> database) : database_(database)
 vector<Image> Processor::process(vector<Image> images)
 {
   // TODO: Implement here
+  database_->open();
   database_->execute("select * from test");
+  database_->close();
   return images;
 }

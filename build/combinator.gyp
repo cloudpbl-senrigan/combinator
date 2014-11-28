@@ -21,7 +21,8 @@
       ],
       'link_settings': {
         'libraries': [
-          '-lmysqlcppconn'
+          '-lmysqlcppconn',
+          '-lyaml-cpp',
         ],
       }
     }

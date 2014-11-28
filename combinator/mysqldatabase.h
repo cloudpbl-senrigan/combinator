@@ -29,10 +29,10 @@ public:
   ResultSet execute(const std::string &sql) override;
 
 private:
+  std::string dbname_;
   std::shared_ptr<sql::Connection> connection_;
   std::shared_ptr<sql::Statement> statement_;
 
-  static const std::string DBNAME;
 };
 
 } // namespace senrigan
