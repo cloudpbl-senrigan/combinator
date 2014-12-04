@@ -49,6 +49,7 @@ int Combinator::run(int argc, const char * const argv[])
   // Crawl
   crawler.crawl();
   cout << "isArrivedNewData: " << crawler.isArrivedNewData() << endl;
+
   // Process
   vector<Image> images;
   images.push_back(Image());
