@@ -10,6 +10,9 @@
 
 #include "crawler.h"
 
+#include <iostream>
+#include <unistd.h>
+
 using namespace senrigan;
 using namespace std;
 
@@ -18,12 +21,17 @@ Crawler::Crawler(shared_ptr<Database> database) : database_(database)
 {
 }
 
-void Crawler::crawl()
+vector<shared_ptr<Position>> Crawler::waitUntilNewPlace()
 {
-  // TODO: Implement here
-}
+  cout << "waiting new data...." << endl;
 
-bool Crawler::isArrivedNewData() {
-  // TODO: Implement here
-  return false;
+  cout << "wait for 10s..." << endl;
+  sleep(10);
+  shared_ptr<Position> position(
+      new Position((int64_t)0, (int64_t)0, (int64_t)0, (double)0.0));
+  vector<shared_ptr<Position>> positions;
+  positions.push_back(position);
+
+  cout << "generated!" << endl;
+  return positions;
 }

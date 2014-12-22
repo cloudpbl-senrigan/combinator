@@ -12,12 +12,14 @@
       ],
       'sources':
       [
+        '../combinator/cell.cpp',
         '../combinator/combinator.cpp',
         '../combinator/crawler.cpp',
+        '../combinator/image.cpp',
+        '../combinator/imageprocessor.cpp',
         '../combinator/main.cpp',
         '../combinator/mysqldatabase.cpp',
         '../combinator/mysqlresultset.cpp',
-        '../combinator/processor.cpp',
       ],
       'link_settings': {
         'libraries': [

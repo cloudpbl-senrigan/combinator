@@ -11,8 +11,10 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "database.h"
+#include "position.h"
 
 namespace senrigan
 {
@@ -21,8 +23,8 @@ class Crawler
 {
 public:
   Crawler(std::shared_ptr<Database> database);
-  void crawl();
-  bool isArrivedNewData();
+
+  std::vector<std::shared_ptr<Position>> waitUntilNewPlace();
 
 private:
   std::shared_ptr<Database> database_;

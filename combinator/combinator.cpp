@@ -14,11 +14,12 @@
 #include <memory>
 #include <vector>
 
+#include "cell.h"
 #include "cmdline.h"
 #include "crawler.h"
 #include "image.h"
 #include "mysqldatabase.h"
-#include "processor.h"
+#include "imageprocessor.h"
 
 using namespace senrigan;
 using namespace std;
@@ -43,30 +44,19 @@ int Combinator::run(int argc, const char * const argv[])
 
   // Configure each components
   shared_ptr<Database> database(new MySQLDatabase(yaml_path));
-  Crawler crawler(database);
-  Processor processor(database);
+  shared_ptr<Crawler> crawler(new Crawler(database));
+  shared_ptr<ImageProcessor> processor(new ImageProcessor());
 
-  // Crawl
-  crawler.crawl();
-  cout << "isArrivedNewData: " << crawler.isArrivedNewData() << endl;
-
-  // Process
-  vector<Image> images;
-  images.push_back(Image());
-  images = processor.process(images);
-
-  // Print the number of elements in [[images]] (for test)
-  int i = 0;
-  for (auto image : images) {
-    cout << "image[" << i++ << "]" << endl;
+  // Main Loop
+  // Todo: Move to another thread
+  while (1) {
+    auto positions = crawler->waitUntilNewPlace();
+    for (auto position : positions) {
+      auto cell = Cell::create(database, position);
+      cell->update(processor);
+      cout << "updated!" << endl;
+    }
   }
 
-  // Execute query (for test)
-  database->open();
-  ResultSet results = database->execute("select count(*) as c from test;");
-  database->close();
-  if (results.next()) {
-    cout << "'select count(*) as c from test': " << results.getInt("c") << endl;
-  }
   return 0;
 }
