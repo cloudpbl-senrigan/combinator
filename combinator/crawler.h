@@ -13,12 +13,12 @@
 #include <memory>
 #include <vector>
 
-#include "database.h"
-#include "position.h"
-
 namespace senrigan
 {
 
+class Database;
+class Position;
+  
 class Crawler
 {
 public:

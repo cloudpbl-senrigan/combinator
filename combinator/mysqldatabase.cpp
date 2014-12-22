@@ -66,8 +66,8 @@ void MySQLDatabase::close()
 {
 }
 
-ResultSet MySQLDatabase::execute(const std::string &sql)
+shared_ptr<ResultSet> MySQLDatabase::execute(const std::string &sql)
 {
-  return MySQLResultSet(
-    statement_->executeQuery(sql));
+  return shared_ptr<ResultSet> (
+      new MySQLResultSet(statement_->executeQuery(sql)));
 }

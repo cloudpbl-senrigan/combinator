@@ -18,13 +18,14 @@ namespace senrigan
 class ResultSet
 {
 public:
-  virtual bool next() { return false; }
-  virtual std::string getString(const std::string &key) { return ""; }
-  std::string getString(const char *key) { return getString(key); }
-  virtual int32_t getInt(const std::string &key) { return 0; }
-  int32_t getInt(const char *key) { return getInt(std::string(key)); }
-  virtual bool getBoolean(const std::string &key) { return true; }
+  virtual bool next() = 0;
+  virtual int64_t rowsCount() = 0;
+  virtual bool getBoolean(const std::string &key) = 0;
   bool getBoolean(const char *key) { return getBoolean(key); }
+  virtual int32_t getInt(const std::string &key) = 0;
+  int32_t getInt(const char *key) { return getInt(std::string(key)); }
+  virtual std::string getString(const std::string &key) = 0;
+  std::string getString(const char *key) { return getString(std::string(key)); }
 };
 
 } // namespace senrigan

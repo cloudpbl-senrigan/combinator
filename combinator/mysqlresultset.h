@@ -25,12 +25,22 @@ class MySQLResultSet : public ResultSet
 public:
   MySQLResultSet(sql::ResultSet *raw_results);
   bool next() override { return results_->next(); }
-  int32_t getInt(const std::string &key) override {
-    return results_->getInt(key);
-  }
-  bool getBoolean(const std::string &key) override {
-    return results_->getBoolean(key);
-  }
+  int64_t rowsCount() override
+    {
+      return results_->rowsCount();
+    }
+  bool getBoolean(const std::string &key) override
+    {
+      return results_->getBoolean(key);
+   }
+  int32_t getInt(const std::string &key) override
+    {
+      return results_->getInt(key);
+    }
+  std::string getString(const std::string &key) override
+    {
+      return results_->getString(key);
+    }
 
 private:
   std::shared_ptr<sql::ResultSet> results_;

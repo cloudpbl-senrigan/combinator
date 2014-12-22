@@ -26,7 +26,7 @@ public:
   MySQLDatabase(const std::string &yaml_path);
   bool open() override;
   void close() override;
-  ResultSet execute(const std::string &sql) override;
+  std::shared_ptr<ResultSet> execute(const std::string &sql) override;
 
 private:
   std::string dbname_;

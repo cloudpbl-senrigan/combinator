@@ -51,6 +51,7 @@ int Combinator::run(int argc, const char * const argv[])
   // Todo: Move to another thread
   while (1) {
     auto positions = crawler->waitUntilNewPlace();
+    continue;
     for (auto position : positions) {
       auto cell = Cell::create(database, position);
       cell->update(processor);

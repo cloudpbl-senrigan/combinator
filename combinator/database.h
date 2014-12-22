@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include "resultset.h"
@@ -22,7 +23,7 @@ class Database
 public:
   virtual bool open() = 0;
   virtual void close() = 0;
-  virtual ResultSet execute(const std::string &sql) = 0;
+  virtual std::shared_ptr<ResultSet> execute(const std::string &sql) = 0;
 };
 
 };
