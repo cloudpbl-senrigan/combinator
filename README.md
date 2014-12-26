@@ -1,3 +1,14 @@
+Requirements
+----
+* g++
+* ninja  
+  On ubuntu, you can install ninja using `apt` as 
+  ```
+$ sudo apt-get install ninja-build
+```
+
+
+
 Install
 ----
 
@@ -9,7 +20,7 @@ $ cd mysql-connector-c++-1.1.4
 $ cmake . && make -j5 && sudo make install
 $ cd ../yaml-cpp-0.5.1
 $ cmake . && make -j5 && sudo make install
-$ cd ../google-glogj
+$ cd ../google-glog
 $ ./configure && make -j5 && sudo make install
 $ cd ../../
 ```
