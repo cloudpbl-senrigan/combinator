@@ -16,6 +16,7 @@
 
 #include <cppconn/connection.h>
 #include <cppconn/statement.h>
+#include <yaml-cpp/yaml.h>
 
 namespace senrigan
 {
@@ -23,11 +24,11 @@ namespace senrigan
 class MySQLDatabase : public Database
 {
 public:
-  MySQLDatabase(const std::string &yaml_path);
+  MySQLDatabase(const YAML::Node& config);
   bool open() override;
   void close() override;
-  std::shared_ptr<ResultSet> execute(const std::string &sql) override;
-
+  std::shared_ptr<ResultSet> execute(const std::string& sql) override;
+  int executeUpdate(const std::string& sql) override;
 private:
   std::string dbname_;
   std::shared_ptr<sql::Connection> connection_;

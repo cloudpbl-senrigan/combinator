@@ -17,39 +17,32 @@
 #include <cppconn/statement.h>
 #include <mysql_connection.h>
 #include <mysql_driver.h>
-#include <yaml-cpp/yaml.h>
 
 #include "mysqlresultset.h"
 
 using namespace senrigan;
 using namespace std;
 
-MySQLDatabase::MySQLDatabase(const std::string &yaml_path)
+MySQLDatabase::MySQLDatabase(const YAML::Node &config)
 {
-  // Load yaml
-  YAML::Node config = YAML::LoadFile(yaml_path);
-
   // Validate settings
-  if (!(config["database"] &&
-        config["database"]["user"] &&
-        config["database"]["password"] &&
-        config["database"]["host"] &&
-        config["database"]["dbname"])) {
+  if (!(config["user"] &&
+        config["password"] &&
+        config["host"] &&
+        config["dbname"])) {
     throw "Config file must set the parameters: "
           "{database: {user:, password:, host:, dbname:}}";
   }
 
-  const YAML::Node &dbconfig = config["database"];
-
   // Connect to mysql
   auto driver = sql::mysql::get_mysql_driver_instance();
   shared_ptr<sql::Connection> connection(
-      driver->connect(dbconfig["host"].as<string>(),
-                      dbconfig["user"].as<string>(),
-                      dbconfig["password"].as<string>()));
+      driver->connect(config["host"].as<string>(),
+                      config["user"].as<string>(),
+                      config["password"].as<string>()));
 
   // Set member variables
-  dbname_ = dbconfig["dbname"].as<string>();
+  dbname_ = config["dbname"].as<string>();
   connection_ = connection;
 }
 
@@ -70,4 +63,9 @@ shared_ptr<ResultSet> MySQLDatabase::execute(const std::string &sql)
 {
   return shared_ptr<ResultSet> (
       new MySQLResultSet(statement_->executeQuery(sql)));
+}
+
+int MySQLDatabase::executeUpdate(const std::string &sql)
+{
+  return statement_->executeUpdate(sql);
 }

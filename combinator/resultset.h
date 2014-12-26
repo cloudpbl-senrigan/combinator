@@ -21,7 +21,9 @@ public:
   virtual bool next() = 0;
   virtual int64_t rowsCount() = 0;
   virtual bool getBoolean(const std::string &key) = 0;
-  bool getBoolean(const char *key) { return getBoolean(key); }
+  bool getBoolean(const char *key) { return getBoolean(std::string(key)); }
+  virtual double getDouble(const std::string &key) = 0;
+  double getDouble(const char *key) { return getDouble(std::string(key)); }
   virtual int32_t getInt(const std::string &key) = 0;
   int32_t getInt(const char *key) { return getInt(std::string(key)); }
   virtual std::string getString(const std::string &key) = 0;

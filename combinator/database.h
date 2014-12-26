@@ -24,6 +24,7 @@ public:
   virtual bool open() = 0;
   virtual void close() = 0;
   virtual std::shared_ptr<ResultSet> execute(const std::string &sql) = 0;
+  virtual int executeUpdate(const std::string &sql) = 0;
 };
 
 };

@@ -33,6 +33,10 @@ public:
     {
       return results_->getBoolean(key);
    }
+  double getDouble(const std::string &key) override
+    {
+      return results_->getDouble(key);
+    }
   int32_t getInt(const std::string &key) override
     {
       return results_->getInt(key);

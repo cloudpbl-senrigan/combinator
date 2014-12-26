@@ -10,7 +10,7 @@
 
 #include "crawler.h"
 
-#include <iostream>
+#include <glog/logging.h>
 #include <unistd.h>
 
 #include "database.h"
@@ -25,7 +25,7 @@ Crawler::Crawler(shared_ptr<Database> database) : database_(database)
 
 vector<shared_ptr<Position>> Crawler::waitUntilNewPlace()
 {
-  cout << "waiting new data...." << endl;
+  LOG(INFO) << "waiting new data...." << endl;
   vector<shared_ptr<Position>> positions;
 
   // TODO: yaw will be changed
@@ -36,30 +36,30 @@ vector<shared_ptr<Position>> Crawler::waitUntilNewPlace()
 
   database_->open();
 
-  int64_t n_rows = 0;
-  while (n_rows == 0) {
-    // Search
-    auto result = database_->execute(target_position_sql);
-    n_rows = result->rowsCount();
-    cout << "n_rows: " << n_rows << endl;
-    // When nothing is found
-    if (n_rows == 0) {
-      cout << "wait for 10s..." << endl;
-      sleep(10);
-      continue;
-    }
+  auto result = database_->execute(target_position_sql);
+  int64_t n_rows = result->rowsCount();
+  LOG(INFO) << "n_rows: " << n_rows << endl;
 
-    // When some updates are found
-    while (result->next()) {
-      int64_t latitude = result->getInt("latitude");
-      int64_t longitude = result->getInt("longitude");
-      int64_t height = result->getInt("height");
-      shared_ptr<Position> position(new Position(latitude, longitude, height));
-      positions.push_back(position);
-    }
+  // When nothing was found
+  while (n_rows == 0) {
+    LOG(INFO) << "wait for 10s..." << endl;
+    sleep(10);
+    // Search
+    result = database_->execute(target_position_sql);
+    n_rows = result->rowsCount();
+    LOG(INFO) << "n_rows: " << n_rows << endl;
+  }
+
+  // When some updates were found
+  while (result->next()) {
+    double longitude = result->getDouble("longitude");
+    double latitude = result->getDouble("latitude");
+    double height = result->getDouble("height");
+    shared_ptr<Position> position(new Position(longitude, latitude, height));
+    positions.push_back(position);
   }
 
   database_->close();
-  cout << "generated!: num = " << positions.size() << endl;
+  LOG(INFO) << "generated!: num = " << positions.size() << endl;
   return positions;
 }

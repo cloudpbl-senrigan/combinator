@@ -16,9 +16,9 @@ using namespace senrigan;
 using namespace std;
 
 
-Image::Image(int id,
+Image::Image(int64_t id,
              string path,
-             shared_ptr<Position> position,
+             const Position& position,
              double theta,
              vector<int> src_ids,
              bool is_processed) :
@@ -31,9 +31,9 @@ Image::Image(int id,
 {
 }
 
-shared_ptr<Image> Image::create(int id,
+shared_ptr<Image> Image::create(int64_t id,
                          string path,
-                         shared_ptr<Position> position,
+                         const Position& position,
                          double theta,
                          bool is_processed)
 {
@@ -43,9 +43,9 @@ shared_ptr<Image> Image::create(int id,
 }
 
 shared_ptr<Image> Image::create(string path,
-                         shared_ptr<Position> position,
-                         double theta,
-                         vector<int> src_ids)
+                                const Position& position,
+                                double theta,
+                                vector<int> src_ids)
 {
   shared_ptr<Image> image(new Image(-1, path, position, theta, src_ids, false));
   return image;

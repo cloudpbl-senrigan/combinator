@@ -14,41 +14,43 @@
 #include <string>
 #include <vector>
 
+#include "position.h"
+
 namespace senrigan
 {
-
-class Position;
 
 class Image
 {
 public:
   std::shared_ptr<Image> copyTo(std::string path);
   // void toCvMat();
-  
-  std::shared_ptr<Image> create(int id,
+  std::string path() { return path_; }
+  int64_t id() { return id_; }
+  double theta() { return theta_; }
+  bool is_processed() { return is_processed_; }
+
+  static std::shared_ptr<Image> create(int64_t id,
         std::string path,
-        std::shared_ptr<Position> position,
+        const Position& position,
         double theta,
         bool is_processed);
-  std::shared_ptr<Image> create(std::string path,
-        std::shared_ptr<Position> position,
+  static std::shared_ptr<Image> create(std::string path,
+        const Position& position,
         double theta,
         std::vector<int> src_ids);
 
-  std::string path() { return path_; }
-  
 private:
-  Image(int id,
+  Image(int64_t id,
         std::string path,
-        std::shared_ptr<Position> position,
+        const Position& position,
         double theta,
         std::vector<int> src_ids,
         bool is_processed);
 
-  int id_;
+  int64_t id_;
   std::string path_;
   double theta_;
-  std::shared_ptr<Position> position_;
+  Position position_;
   std::vector<int> src_ids_;
   bool is_processed_;
 };

@@ -25,6 +25,7 @@
         'libraries': [
           '-lmysqlcppconn',
           '-lyaml-cpp',
+          '-lglog'
         ],
       }
     }
