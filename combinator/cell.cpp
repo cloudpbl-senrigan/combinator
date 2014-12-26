@@ -38,6 +38,7 @@ Cell::Cell(shared_ptr<Database> database,
 
   LOG(INFO) << position->toString() << endl;
 
+  // Retrieve images related to this position
   // TODO: yaw will be renamed to theta or direction
   const string pickup_sql =
     string("select image_id, path, latitude, longitude, "
@@ -52,6 +53,7 @@ Cell::Cell(shared_ptr<Database> database,
   shared_ptr<ResultSet> result = database_->execute(pickup_sql);
   database_->close();
 
+  // Store each image information into [[Image]] container
   while(result->next()) {
     int32_t image_id = result->getInt("image_id");
     string path = result->getString("path");
