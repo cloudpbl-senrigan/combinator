@@ -10,6 +10,8 @@
 
 #include "cell.h"
 
+#include <map>
+
 #include <glog/logging.h>
 
 #include "database.h"
@@ -42,7 +44,8 @@ Cell::Cell(shared_ptr<Database> database,
   // TODO: yaw will be renamed to theta or direction
   const string pickup_sql =
     string("select image_id, path, latitude, longitude, "
-           "height, yaw, converted from image_master_table where ") +
+           "height, yaw, converted, created_date "
+           "from image_master_table where ") +
     position->toSQLCondition(Position::LATITUDE |
                              Position::LONGITUDE |
                              Position::HEIGHT);
@@ -58,15 +61,17 @@ Cell::Cell(shared_ptr<Database> database,
     int32_t image_id = result->getInt("image_id");
     string path = result->getString("path");
     double theta = result->getDouble("yaw");
+    string created_at = result->getString("created_date");
     LOG(INFO) << "---- Query Result ----" << endl
               << "image_id: " << image_id << endl
               << "path: " << path << endl
               << "latitude: "  << result->getDouble("latitude") << endl
               << "longitude: "  << result->getDouble("longitude") << endl
               << "height: "  << result->getDouble("height") << endl
-              << "theta: "  << theta << endl;
-    auto image = Image::create(
-        image_id, path, position_, theta, result->getBoolean("converted"));
+              << "theta: "  << theta << endl
+              << "created_at: "  << created_at << endl;
+    auto image = Image::create(image_id, path, position_, theta,
+                               result->getBoolean("converted"), created_at);
     images_.push_back(image);
   }
 }
@@ -84,8 +89,36 @@ void Cell::update(shared_ptr<ImageProcessor> processor)
 {
   // TODO: implement here
   LOG(INFO) << "Cell::update(): started!" << endl;
-  database_->open();
+
+  // Search the latest four images
+  map<string, shared_ptr<Image>> nesw_images;
   for (auto image : images_) {
+    string key;
+    if (image->theta() > 315 || image->theta() < 45)
+      key = "N";
+    else if (image->theta() < 135)
+      key = "E";
+    else if (image->theta() < 225)
+      key = "S";
+    else
+      key = "W";
+
+    if (!nesw_images[key] ||
+        nesw_images[key]->created_at() < image->created_at())
+      nesw_images[key] = image;
+  }
+
+  LOG(INFO) << "start processing!";
+  auto processed_images = processor->process(nesw_images);
+  LOG(INFO) << "processed!";
+
+  // Update Database
+  database_->open();
+  database_->executeUpdate("start transaction");
+
+  // Mark as processed
+  for (auto image_pair : nesw_images) {
+    auto image = image_pair.second;
     if (!image->is_processed()) {
       stringstream sql;
       sql << "update image_master_table set converted = True where image_id = "
@@ -94,7 +127,18 @@ void Cell::update(shared_ptr<ImageProcessor> processor)
       database_->executeUpdate(sql.str());
       LOG(INFO) << "image_id = " << image->id() << endl;
     }
-    database_->close();
   }
+
+  // Insert information of new images
+  for (auto image_pair : processed_images) {
+    auto image = image_pair.second;
+    LOG(INFO) << "id: " << image->id() << ", "
+              << "path: " << image->path();
+  }
+
+  // Finalize Database
+  database_->executeUpdate("commit");
+  database_->close();
+
   LOG(INFO) << "Cell::update(): finished!" << endl;;
 }

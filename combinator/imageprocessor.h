@@ -10,9 +10,9 @@
 
 #pragma once
 
+#include <map>
 #include <memory>
-#include <vector>
-
+#include <string>
 
 namespace senrigan
 {
@@ -24,8 +24,8 @@ class ImageProcessor
 {
 public:
   ImageProcessor() {};
-  std::vector<std::shared_ptr<Image>> process(
-      const std::vector<std::shared_ptr<Image>>& input_nwes_image);
+  std::map<std::string, std::shared_ptr<Image>> process(
+      const std::map<std::string, std::shared_ptr<Image>> input_nesw_image);
 };
 
 }; // namespace senrigan

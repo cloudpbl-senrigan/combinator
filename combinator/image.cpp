@@ -12,6 +12,8 @@
 
 #include <fstream>
 
+#include <glog/logging.h>
+
 using namespace senrigan;
 using namespace std;
 
@@ -21,46 +23,56 @@ Image::Image(int64_t id,
              const Position& position,
              double theta,
              vector<int> src_ids,
-             bool is_processed) :
+             bool is_processed,
+             string created_at) :
   id_(id),
   path_(path),
   position_(position),
   theta_(theta),
   src_ids_(src_ids),
-  is_processed_(is_processed)
+  is_processed_(is_processed),
+  created_at_(created_at)
 {
 }
 
 shared_ptr<Image> Image::create(int64_t id,
-                         string path,
-                         const Position& position,
-                         double theta,
-                         bool is_processed)
+                                string path,
+                                const Position& position,
+                                double theta,
+                                bool is_processed,
+                                string created_at)
 {
   shared_ptr<Image> image(
-      new Image(id, path, position, theta, vector<int> (), is_processed));
+      new Image(
+          id, path, position, theta, vector<int> (), is_processed, created_at));
   return image;
 }
 
 shared_ptr<Image> Image::create(string path,
                                 const Position& position,
                                 double theta,
-                                vector<int> src_ids)
+                                vector<int> src_ids,
+                                string created_at)
 {
-  shared_ptr<Image> image(new Image(-1, path, position, theta, src_ids, false));
+  shared_ptr<Image> image(
+      new Image(-1, path, position, theta, src_ids, false, created_at));
   return image;
 }
 
 shared_ptr<Image> Image::copyTo(string path)
 {
+  LOG(INFO) << "copyTo: " << path;
+
   // Copy image file
   ifstream src(path_, ios::binary);
   ofstream dst(path, ios::trunc | ios::binary);
   dst << src.rdbuf();
 
   // Create [[Image]] object
+  // TODO: not created_at but current time
   shared_ptr<Image> dst_image(
-      new Image(id_, path, position_, theta_, src_ids_, is_processed_));
+      new Image(
+          id_, path, position_, theta_, src_ids_, is_processed_, created_at_));
   return dst_image;
 }
 

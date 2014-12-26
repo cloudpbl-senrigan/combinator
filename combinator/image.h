@@ -28,16 +28,19 @@ public:
   int64_t id() { return id_; }
   double theta() { return theta_; }
   bool is_processed() { return is_processed_; }
+  std::string created_at() { return created_at_; }
 
   static std::shared_ptr<Image> create(int64_t id,
-        std::string path,
-        const Position& position,
-        double theta,
-        bool is_processed);
+                                       std::string path,
+                                       const Position& position,
+                                       double theta,
+                                       bool is_processed,
+                                       std::string created_at);
   static std::shared_ptr<Image> create(std::string path,
-        const Position& position,
-        double theta,
-        std::vector<int> src_ids);
+                                       const Position& position,
+                                       double theta,
+                                       std::vector<int> src_ids,
+                                       std::string created_at);
 
 private:
   Image(int64_t id,
@@ -45,7 +48,8 @@ private:
         const Position& position,
         double theta,
         std::vector<int> src_ids,
-        bool is_processed);
+        bool is_processed,
+        std::string created_at);
 
   int64_t id_;
   std::string path_;
@@ -53,6 +57,7 @@ private:
   Position position_;
   std::vector<int> src_ids_;
   bool is_processed_;
+  std::string created_at_;
 };
 
 }

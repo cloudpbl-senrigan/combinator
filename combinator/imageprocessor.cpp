@@ -21,18 +21,19 @@ static string basename(const string& path) {
 }
 
 // static
-vector<shared_ptr<Image>> ImageProcessor::process(
-    const vector<shared_ptr<Image>>& input_nwes_image)
+map<string, shared_ptr<Image>> ImageProcessor::process(
+    const map<string, shared_ptr<Image>> input_nesw_image)
 {
-  vector<shared_ptr<Image>> output_nwes_image;
+  map<string, shared_ptr<Image>> output_nesw_image;
 
   // Copy to '/tmp'
-  for (auto image : input_nwes_image) {
+  for (auto image_pair : input_nesw_image) {
+    auto image = image_pair.second;
     string filename = basename(image->path());
     string out_path = string("/tmp/") + filename;
     auto out_image = image->copyTo(out_path);
-    output_nwes_image.push_back(out_image);
+    output_nesw_image[image_pair.first] = out_image;
   }
 
-  return output_nwes_image;
+  return output_nesw_image;
 }
