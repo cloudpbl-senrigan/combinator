@@ -32,13 +32,13 @@ public:
     theta_(_theta) {};
 
   // TODO: Implement me
-  int64_t x() { return (int64_t)longitude_; };
-  int64_t y() { return (int64_t)latitude_; };
-  int64_t z() { return (int64_t)height_; };
-  double longitude() { return longitude_; };
-  double latitude() { return latitude_; };
-  double height() { return height_; };
-  double theta() { return theta_; };
+  int64_t x() const { return (int64_t)longitude_; };
+  int64_t y() const { return (int64_t)latitude_; };
+  int64_t z() const { return (int64_t)height_; };
+  double longitude() const { return longitude_; };
+  double latitude() const { return latitude_; };
+  double height() const { return height_; };
+  double theta() const { return theta_; };
 
   enum Element {
     X = 1 << 1,

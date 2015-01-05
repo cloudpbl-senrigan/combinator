@@ -23,9 +23,16 @@ class Image;
 class ImageProcessor
 {
 public:
+  enum Direction {
+    NORTH,
+    SOUTH,
+    WEST,
+    EAST
+  };
+
   ImageProcessor() {};
-  std::map<std::string, std::shared_ptr<Image>> process(
-      const std::map<std::string, std::shared_ptr<Image>> input_nesw_image);
+  std::map<Direction, std::shared_ptr<Image>> process(
+      const std::map<Direction, std::shared_ptr<Image>> input_nesw_image);
 };
 
 }; // namespace senrigan

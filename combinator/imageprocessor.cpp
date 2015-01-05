@@ -21,10 +21,10 @@ static string basename(const string& path) {
 }
 
 // static
-map<string, shared_ptr<Image>> ImageProcessor::process(
-    const map<string, shared_ptr<Image>> input_nesw_image)
+map<ImageProcessor::Direction, shared_ptr<Image>> ImageProcessor::process(
+    const map<ImageProcessor::Direction, shared_ptr<Image>> input_nesw_image)
 {
-  map<string, shared_ptr<Image>> output_nesw_image;
+  map<ImageProcessor::Direction, shared_ptr<Image>> output_nesw_image;
 
   // Copy to '/tmp'
   for (auto image_pair : input_nesw_image) {

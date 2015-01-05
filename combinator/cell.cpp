@@ -18,6 +18,7 @@
 #include "position.h"
 #include "image.h"
 #include "imageprocessor.h"
+#include "utils.h"
 
 using namespace senrigan;
 using namespace std;
@@ -91,18 +92,17 @@ void Cell::update(shared_ptr<ImageProcessor> processor)
   LOG(INFO) << "Cell::update(): started!" << endl;
 
   // Search the latest four images
-  map<string, shared_ptr<Image>> nesw_images;
+  map<ImageProcessor::Direction, shared_ptr<Image>> nesw_images;
   for (auto image : images_) {
-    string key;
+    ImageProcessor::Direction key;
     if (image->theta() > 315 || image->theta() < 45)
-      key = "N";
+      key = ImageProcessor::NORTH;
     else if (image->theta() < 135)
-      key = "E";
+      key = ImageProcessor::EAST;
     else if (image->theta() < 225)
-      key = "S";
+      key = ImageProcessor::SOUTH;
     else
-      key = "W";
-
+      key = ImageProcessor::WEST;
     if (!nesw_images[key] ||
         nesw_images[key]->created_at() < image->created_at())
       nesw_images[key] = image;
@@ -131,14 +131,56 @@ void Cell::update(shared_ptr<ImageProcessor> processor)
 
   // Insert information of new images
   for (auto image_pair : processed_images) {
+    stringstream sql;
+    sql << "insert into image_processed_tables "
+           "(path, x, y, z, create_date, taken_date, "
+           "theta, height, width, source_image_ids) "
+           "values ";
     auto image = image_pair.second;
     LOG(INFO) << "id: " << image->id() << ", "
               << "path: " << image->path();
+    sql << "("
+        << "\"" << image->path() << "\", "
+        << image->position().x() << ", "
+        << image->position().y() << ", "
+        << image->position().z() << ", "
+        << "\"" << current_datetime() << "\", "
+        << "\"" << image->created_at() << "\", "
+        << image->theta() << ", "
+        << 0 << ", "
+        << 0 << ", ";
+    // TODO: source_image_ids should be an array of integer
+    int64_t src_id = -1;
+    if (!image->src_ids().empty()) {
+      src_id = image->src_ids()[0];
+      // sql << "(";
+      // for (auto id : image->src_ids()) {
+      //   sql << id << ", ";
+      // }
+      // sql << ")";
+    }
+    if (src_id > 0)
+      sql << src_id;
+    else
+      sql << "null";
+
+    sql << ")";
+    sql << "on duplicate key update "
+        << "path = \"" << image->path() << "\", "
+        << "create_date = \"" << current_datetime() << "\", "
+        << "source_image_ids = ";
+    if (src_id > 0)
+      sql << src_id;
+    else
+      sql << "null";
+
+    // Execute SQL
+    database_->executeUpdate(sql.str());
   }
 
   // Finalize Database
   database_->executeUpdate("commit");
   database_->close();
 
-  LOG(INFO) << "Cell::update(): finished!" << endl;;
+  LOG(INFO) << "Cell::update(): finished!" << endl;
 }

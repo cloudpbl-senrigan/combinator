@@ -31,3 +31,4 @@ Makefile
 out/
 *.Makefile
 *.target.mk
+log/

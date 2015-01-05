@@ -24,11 +24,13 @@ class Image
 public:
   std::shared_ptr<Image> copyTo(std::string path);
   // void toCvMat();
-  std::string path() { return path_; }
-  int64_t id() { return id_; }
-  double theta() { return theta_; }
-  bool is_processed() { return is_processed_; }
-  std::string created_at() { return created_at_; }
+  int64_t id() const { return id_; }
+  std::string path() const { return path_; }
+  double theta() const { return theta_; }
+  const Position& position() const { return position_; }
+  const std::vector<int>& src_ids() const { return src_ids_; }
+  bool is_processed() const { return is_processed_; }
+  const std::string& created_at() const { return created_at_; }
 
   static std::shared_ptr<Image> create(int64_t id,
                                        std::string path,
