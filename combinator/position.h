@@ -14,6 +14,9 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#define MESH_WIDTH 1
+#define LONGI 0.000010966382364
+#define LATIT 0.000008983148616
 
 namespace senrigan {
 
@@ -32,9 +35,18 @@ public:
     theta_(_theta) {};
 
   // TODO: Implement me
-  int64_t x() { return (int64_t)longitude_; };
-  int64_t y() { return (int64_t)latitude_; };
-  int64_t z() { return (int64_t)height_; };
+  /*
+    the origin point is on four corners of meshes
+   */
+    int64_t x() {
+        return (int64_t)(longitude_ / (MESH_WIDTH*LONGI)) + 1;
+    };
+    int64_t y() {
+        return (int64_t)(latitude_ / (MESH_WIDTH*LATIT)) + 1;
+    };
+    int64_t z() {
+        return (int64_t)(height_ / MESH_WIDTH) + 1;
+    };
   double longitude() { return longitude_; };
   double latitude() { return latitude_; };
   double height() { return height_; };

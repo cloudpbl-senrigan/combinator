@@ -1,4 +1,3 @@
-DROP TABLE `image_master_table` IF EXISTS
 CREATE TABLE `image_master_table` (
   `image_id` int(11) NOT NULL,
   `path` varchar(255) NOT NULL,
