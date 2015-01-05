@@ -10,9 +10,11 @@
 
 #pragma once
 
+#include <map>
 #include <memory>
-#include <vector>
+#include <string>
 
+#include <yaml-cpp/yaml.h>
 
 namespace senrigan
 {
@@ -23,9 +25,19 @@ class Image;
 class ImageProcessor
 {
 public:
-  ImageProcessor() {};
-  std::vector<std::shared_ptr<Image>> process(
-      const std::vector<std::shared_ptr<Image>>& input_nwes_image);
+  enum Direction {
+    NORTH,
+    SOUTH,
+    WEST,
+    EAST
+  };
+
+  ImageProcessor(const YAML::Node& config);
+  std::map<Direction, std::shared_ptr<Image>> process(
+      const std::map<Direction, std::shared_ptr<Image>> input_nesw_image);
+
+private:
+  std::string out_dir_;
 };
 
 }; // namespace senrigan
