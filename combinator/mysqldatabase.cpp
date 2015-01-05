@@ -10,6 +10,7 @@
 
 #include "mysqldatabase.h"
 
+#include <exception>
 #include <iostream>
 
 #include <cppconn/connection.h>
@@ -30,8 +31,8 @@ MySQLDatabase::MySQLDatabase(const YAML::Node &config)
         config["password"] &&
         config["host"] &&
         config["dbname"])) {
-    throw "Config file must set the parameters: "
-          "{database: {user:, password:, host:, dbname:}}";
+    throw runtime_error("Config file must set the parameters: "
+                        "{database: {user:, password:, host:, dbname:}}");
   }
 
   // Connect to mysql

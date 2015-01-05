@@ -14,6 +14,8 @@
 #include <memory>
 #include <string>
 
+#include <yaml-cpp/yaml.h>
+
 namespace senrigan
 {
 
@@ -30,9 +32,12 @@ public:
     EAST
   };
 
-  ImageProcessor() {};
+  ImageProcessor(const YAML::Node& config);
   std::map<Direction, std::shared_ptr<Image>> process(
       const std::map<Direction, std::shared_ptr<Image>> input_nesw_image);
+
+private:
+  std::string out_dir_;
 };
 
 }; // namespace senrigan

@@ -47,13 +47,14 @@ int Combinator::run(int argc, const char * const argv[])
   string yaml_path = parser.get<string>("config");
   LOG(INFO) << "yaml: " << yaml_path << endl;
   YAML::Node config = YAML::LoadFile(yaml_path);
-  if (!config["database"] || !config["cell"])
-    throw "Config file must set the parameters: {database: {...}, cell: {...}}";
+  if (!config["database"] || !config["processor"])
+    throw runtime_error("Config file must set the parameters: "
+                        "{database: {...}, processor: {}}");
 
   // Configure each components
   shared_ptr<Database> database(new MySQLDatabase(config["database"]));
   shared_ptr<Crawler> crawler(new Crawler(database));
-  shared_ptr<ImageProcessor> processor(new ImageProcessor());
+  shared_ptr<ImageProcessor> processor(new ImageProcessor(config["processor"]));
 
   // Main Loop
   // TODO: Move to another thread
@@ -62,7 +63,7 @@ int Combinator::run(int argc, const char * const argv[])
     auto positions = crawler->waitUntilNewPlace();
     for (auto position : positions) {
       LOG(INFO) << "Cell::create()" << endl;
-      auto cell = Cell::create(database, position, config["cell"]);
+      auto cell = Cell::create(database, position);
       LOG(INFO) << "Cell::update()" << endl;
       cell->update(processor);
     }

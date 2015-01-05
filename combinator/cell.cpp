@@ -10,6 +10,7 @@
 
 #include "cell.h"
 
+#include <exception>
 #include <map>
 
 #include <glog/logging.h>
@@ -26,19 +27,10 @@ using namespace std;
 
 // TODO: position should wrap in the center of each cell
 Cell::Cell(shared_ptr<Database> database,
-           shared_ptr<Position> position,
-           const YAML::Node& config) :
+           shared_ptr<Position> position) :
   database_(database),
   position_(*position)
 {
-
-  // Check if configuration is set
-  if (!config["dest_dir"])
-    throw "Config file msut set the parameter: {cell: {dest_dir:}}";
-
-  // Set a destination path
-  dest_dir_ = config["dest_dir"].as<string>();
-
   LOG(INFO) << position->toString() << endl;
 
   // Retrieve images related to this position
@@ -79,10 +71,9 @@ Cell::Cell(shared_ptr<Database> database,
 
 // static
 shared_ptr<Cell> Cell::create(shared_ptr<Database> database,
-                              shared_ptr<Position> position,
-                              const YAML::Node& config)
+                              shared_ptr<Position> position)
 {
-  shared_ptr<Cell> cell(new Cell(database, position, config));
+  shared_ptr<Cell> cell(new Cell(database, position));
   return cell;
 }
 
@@ -139,6 +130,7 @@ void Cell::update(shared_ptr<ImageProcessor> processor)
     auto image = image_pair.second;
     LOG(INFO) << "id: " << image->id() << ", "
               << "path: " << image->path();
+    // Set each parameter
     sql << "("
         << "\"" << image->path() << "\", "
         << image->position().x() << ", "
@@ -153,18 +145,12 @@ void Cell::update(shared_ptr<ImageProcessor> processor)
     int64_t src_id = -1;
     if (!image->src_ids().empty()) {
       src_id = image->src_ids()[0];
-      // sql << "(";
-      // for (auto id : image->src_ids()) {
-      //   sql << id << ", ";
-      // }
-      // sql << ")";
-    }
-    if (src_id > 0)
       sql << src_id;
-    else
+    } else {
       sql << "null";
+    }
 
-    sql << ")";
+    sql << ") ";
     sql << "on duplicate key update "
         << "path = \"" << image->path() << "\", "
         << "create_date = \"" << current_datetime() << "\", "
@@ -176,6 +162,7 @@ void Cell::update(shared_ptr<ImageProcessor> processor)
 
     // Execute SQL
     database_->executeUpdate(sql.str());
+    LOG(INFO) << "QUERY: " << sql.str();
   }
 
   // Finalize Database

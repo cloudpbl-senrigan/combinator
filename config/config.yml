@@ -4,5 +4,5 @@ database:
     host: 127.0.0.1:3306
     dbname: senrigandb
 
-cell:
-    dest_dir: /tmp/converted
+processor:
+    output_dir: "/tmp/converted"
