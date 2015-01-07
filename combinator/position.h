@@ -38,19 +38,19 @@ public:
   /*
     the origin point is on four corners of meshes
    */
-    int64_t x() {
+    int64_t x() const {
         return (int64_t)(longitude_ / (MESH_WIDTH*LONGI)) + 1;
     };
-    int64_t y() {
+    int64_t y() const {
         return (int64_t)(latitude_ / (MESH_WIDTH*LATIT)) + 1;
     };
-    int64_t z() {
+    int64_t z() const {
         return (int64_t)(height_ / MESH_WIDTH) + 1;
     };
-  double longitude() { return longitude_; };
-  double latitude() { return latitude_; };
-  double height() { return height_; };
-  double theta() { return theta_; };
+  double longitude() const { return longitude_; };
+  double latitude() const { return latitude_; };
+  double height() const { return height_; };
+  double theta() const { return theta_; };
 
   enum Element {
     X = 1 << 1,
@@ -62,7 +62,7 @@ public:
     THETA = 1 << 7
   };
 
-  std::string toSQLCondition(uint32_t flag)
+  std::string toSQLCondition(uint32_t flag) const
     {
       std::stringstream sql;
       bool is_first = true;
@@ -117,7 +117,7 @@ public:
       }
       return sql.str();
     }
-  std::string toString()
+  std::string toString() const
     {
       std::stringstream str;
       str << "<Position: "
