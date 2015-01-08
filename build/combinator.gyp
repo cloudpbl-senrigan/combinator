@@ -20,6 +20,7 @@
         '../combinator/main.cpp',
         '../combinator/mysqldatabase.cpp',
         '../combinator/mysqlresultset.cpp',
+        '../combinator/position.cpp',
         '../combinator/utils.cpp',
       ],
       'link_settings': {

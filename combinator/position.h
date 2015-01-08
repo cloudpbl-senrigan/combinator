@@ -14,9 +14,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#define MESH_WIDTH 1
-#define LONGI 0.000010966382364
-#define LATIT 0.000008983148616
+#include <utility>
 
 namespace senrigan {
 
@@ -38,20 +36,15 @@ public:
   /*
     the origin point is on four corners of meshes
    */
-    int64_t x() const {
-        return (int64_t)(longitude_ / (MESH_WIDTH*LONGI)) + 1;
-    };
-    int64_t y() const {
-        return (int64_t)(latitude_ / (MESH_WIDTH*LATIT)) + 1;
-    };
-    int64_t z() const {
-        return (int64_t)(height_ / MESH_WIDTH) + 1;
-    };
-  double longitude() const { return longitude_; };
-  double latitude() const { return latitude_; };
-  double height() const { return height_; };
-  double theta() const { return theta_; };
+  int64_t x() const { return to_x(longitude_); }
+  int64_t y() const { return to_y(latitude_); }
+  int64_t z() const { return to_z(height_); }
+  double longitude() const { return longitude_; }
+  double latitude() const { return latitude_; }
+  double height() const { return height_; }
+  double theta() const { return theta_; }
 
+  // 
   enum Element {
     X = 1 << 1,
     Y = 1 << 2,
@@ -62,75 +55,36 @@ public:
     THETA = 1 << 7
   };
 
-  std::string toSQLCondition(uint32_t flag) const
-    {
-      std::stringstream sql;
-      bool is_first = true;
-      if (flag & X) {
-        if (is_first)
-          is_first = false;
-        else
-          sql << "and ";
-        sql << "x = " << x() << " ";
-      }
-      if (flag & Y) {
-        if (is_first)
-          is_first = false;
-        else
-          sql << "and ";
-        sql << "y = " << y() << " ";
-      }
-      if (flag & Z) {
-        if (is_first)
-          is_first = false;
-        else
-          sql << "and ";
-        sql << "z = " << z() << " ";
-      }
-      if (flag & LONGITUDE) {
-        if (is_first)
-          is_first = false;
-        else
-          sql << "and ";
-        sql << "longitude = " << std::setprecision(7) << longitude() << " ";
-      }
-      if (flag & LATITUDE) {
-        if (is_first)
-          is_first = false;
-        else
-          sql << "and ";
-        sql << "latitude = " << std::setprecision(7) << latitude() << " ";
-      }
-      if (flag & HEIGHT) {
-        if (is_first)
-          is_first = false;
-        else
-          sql << "and ";
-        sql << "height = " << std::setprecision(7) << height() << " ";
-      }
-      if (flag & THETA) {
-        if (is_first)
-          is_first = false;
-        else
-          sql << "and ";
-        sql << "theta = " << std::setprecision(7) << theta() << " ";
-      }
-      return sql.str();
-    }
-  std::string toString() const
-    {
-      std::stringstream str;
-      str << "<Position: "
-          << "longitude = " << std::setprecision(7) << longitude_ << ", "
-          << "latitude = " << std::setprecision(7) << latitude_ << ", "
-          << "height = " << std::setprecision(7) << height_ << ", "
-          << "theta = " << std::setprecision(7) << theta_
-          << ">";
-      return str.str();
-    }
+  // [[flag]] is OR-ed [[Element]] enum
+  std::string toSQLCondition(uint32_t flag) const;
+  std::string toString() const;
 
 private:
   double longitude_, latitude_, height_, theta_;
+
+
+  // Converters
+  static int64_t to_x(double longitude);
+  static int64_t to_y(double latitude);
+  static int64_t to_z(double height);
+
+  static double to_longitude(int64_t x); // calculate the lower bound of x
+  static double to_latitude(int64_t y); // calculate the lower bound of y
+  static double to_height(int64_t z); // calculate the lower bound of z
+
+  // Utilities
+  // Return a pair of (lower bound, higher bound)
+  static std::pair<double, double> range_longitude(int64_t x);
+  static std::pair<double, double> range_latitude(int64_t y);
+  static std::pair<double, double> range_height(int64_t z);
+
+  // Constants
+  static const double mesh_scale_;
+  static const double longitude_unit_size_; // Unit: [deg/m]
+  static const double latitude_unit_size_; // Unit: [deg/m]
+  static const double height_unit_size_; // Unit: [m/m]
 };
 
 }; // namespace senrigan
+
+
