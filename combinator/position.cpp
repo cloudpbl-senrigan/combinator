@@ -55,27 +55,24 @@ double Position::to_height(int64_t z)
   return mesh_scale_ * height_unit_size_ * z;
 }
 
-// static
-pair<double, double> Position::range_longitude(int64_t x)
+pair<double, double> Position::range_longitude() const
 {
-  double lower = to_longitude(x);
-  double higher = to_longitude(x+1);
+  double lower = to_longitude(x());
+  double higher = to_longitude(x()+1);
   return pair<double, double>(lower, higher);
 }
 
-// static
-pair<double, double> Position::range_latitude(int64_t y)
+pair<double, double> Position::range_latitude() const
 {
-  double lower = to_latitude(y);
-  double higher = to_latitude(y+1);
+  double lower = to_latitude(y());
+  double higher = to_latitude(y()+1);
   return pair<double, double>(lower, higher);
 }
 
-// static
-pair<double, double> Position::range_height(int64_t z)
+pair<double, double> Position::range_height() const
 {
-  double lower = to_height(z);
-  double higher = to_height(z+1);
+  double lower = to_height(z());
+  double higher = to_height(z()+1);
   return pair<double, double>(lower, higher);
 }
 
@@ -89,8 +86,12 @@ static inline void maybe_append_add_operator(bool& is_first, stringstream& sql)
 
 string Position::toSQLCondition(uint32_t flag) const
 {
-  std::stringstream sql;
+  stringstream sql;
   bool is_first = true;
+
+  // Set format
+  sql << setprecision(7);
+  
   if (flag & X) {
     maybe_append_add_operator(is_first, sql);
     sql << "x = " << x() << " ";
@@ -105,30 +106,40 @@ string Position::toSQLCondition(uint32_t flag) const
   }
   if (flag & LONGITUDE) {
     maybe_append_add_operator(is_first, sql);
-    sql << "longitude = " << std::setprecision(7) << longitude() << " ";
+    auto range = range_longitude();
+    sql << "longitude >= " << range.first << " and ";
+    sql << "longitude < " << range.second << " ";
   }
   if (flag & LATITUDE) {
     maybe_append_add_operator(is_first, sql);
-    sql << "latitude = " << std::setprecision(7) << latitude() << " ";
+    auto range = range_latitude();
+    sql << "latitude >= " << range.first << " and ";
+    sql << "latitude < " << range.second << " ";
   }
   if (flag & HEIGHT) {
     maybe_append_add_operator(is_first, sql);
-    sql << "height = " << std::setprecision(7) << height() << " ";
+    auto range = range_height();
+    sql << "height >= " << range.first << " and ";
+    sql << "height < " << range.second << " ";
   }
   if (flag & THETA) {
     maybe_append_add_operator(is_first, sql);
-    sql << "theta = " << std::setprecision(7) << theta() << " ";
+    sql << "theta = " << theta() << " ";
   }
   return sql.str();
 }
-std::string Position::toString() const
+
+string Position::toString() const
 {
-  std::stringstream str;
+  stringstream str;
+  // Set format
+  str << setprecision(7);
+  
   str << "<Position: "
-      << "longitude = " << std::setprecision(7) << longitude_ << ", "
-      << "latitude = " << std::setprecision(7) << latitude_ << ", "
-      << "height = " << std::setprecision(7) << height_ << ", "
-      << "theta = " << std::setprecision(7) << theta_
+      << "longitude = " << longitude_ << ", "
+      << "latitude = " << latitude_ << ", "
+      << "height = " << height_ << ", "
+      << "theta = " << theta_
       << ">";
   return str.str();
 }

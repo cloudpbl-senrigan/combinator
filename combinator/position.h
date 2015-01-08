@@ -44,6 +44,12 @@ public:
   double height() const { return height_; }
   double theta() const { return theta_; }
 
+  // Utilities
+  // Return a pair of (lower bound, higher bound)
+  std::pair<double, double> range_longitude() const;
+  std::pair<double, double> range_latitude() const;
+  std::pair<double, double> range_height() const;
+
   // 
   enum Element {
     X = 1 << 1,
@@ -71,12 +77,6 @@ private:
   static double to_longitude(int64_t x); // calculate the lower bound of x
   static double to_latitude(int64_t y); // calculate the lower bound of y
   static double to_height(int64_t z); // calculate the lower bound of z
-
-  // Utilities
-  // Return a pair of (lower bound, higher bound)
-  static std::pair<double, double> range_longitude(int64_t x);
-  static std::pair<double, double> range_latitude(int64_t y);
-  static std::pair<double, double> range_height(int64_t z);
 
   // Constants
   static const double mesh_scale_;
