@@ -92,7 +92,7 @@ string Position::toSQLCondition(uint32_t flag) const
   bool is_first = true;
 
   // Set format
-  // sql << setprecision(7);
+  sql << setprecision(20);
   
   if (flag & X) {
     maybe_append_add_operator(is_first, sql);
@@ -135,13 +135,19 @@ string Position::toString() const
 {
   stringstream str;
   // Set format
-  str << setprecision(7);
+  str << setprecision(20);
   
   str << "<Position: "
       << "longitude = " << longitude_ << ", "
       << "latitude = " << latitude_ << ", "
       << "height = " << height_ << ", "
-      << "theta = " << theta_
+      << "theta = " << theta_ << ", "
+      << "x = " << x() << ", "
+      << "y = " << y() << ", "
+      << "z = " << z() << ", "
+      << "mesh_longitude_range = (" << to_longitude(x()) << ", " << to_longitude(x()+1) << "), "
+      << "mesh_latitude_range = (" << to_latitude(y()) << ", " << to_latitude(y()+1) << "), "
+      << "mesh_height_range = (" << to_height(z()) << ", " << to_height(z()+1) << "), "
       << ">";
   return str.str();
 }

@@ -32,7 +32,6 @@ public:
     height_(_height),
     theta_(_theta) {};
 
-  // TODO: Implement me
   /*
     the origin point is on four corners of meshes
    */
