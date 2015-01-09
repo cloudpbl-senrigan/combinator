@@ -99,9 +99,9 @@ void Cell::update(shared_ptr<ImageProcessor> processor)
       nesw_images[key] = image;
   }
 
-  LOG(INFO) << "start processing!";
+  LOG(INFO) << "start processing! num of images: " << images_.size() << ", " <<nesw_images.size();
   auto processed_images = processor->process(nesw_images);
-  LOG(INFO) << "processed!";
+  LOG(INFO) << "processed! generated: " << processed_images.size();
 
   // Update Database
   database_->open();

@@ -10,6 +10,8 @@
 
 #include "position.h"
 
+#include <math.h>
+
 using namespace senrigan;
 using namespace std;
 
@@ -24,17 +26,17 @@ const double Position::height_unit_size_ = 1.0;
 
 // static
 int64_t Position::to_x(double longitude) {
-  return longitude  / (mesh_scale_ * longitude_unit_size_);
+  return floor(longitude  / (mesh_scale_ * longitude_unit_size_));
 }
 
 // static
 int64_t Position::to_y(double latitude) {
-  return latitude / (mesh_scale_ * latitude_unit_size_);
+  return floor(latitude / (mesh_scale_ * latitude_unit_size_));
 };
 
 // static
 int64_t Position::to_z(double height) {
-  return height / (mesh_scale_ * height_unit_size_);
+  return floor(height / (mesh_scale_ * height_unit_size_));
 }
 
 // static
@@ -90,7 +92,7 @@ string Position::toSQLCondition(uint32_t flag) const
   bool is_first = true;
 
   // Set format
-  sql << setprecision(7);
+  // sql << setprecision(7);
   
   if (flag & X) {
     maybe_append_add_operator(is_first, sql);

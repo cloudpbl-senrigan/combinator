@@ -45,6 +45,7 @@ map<ImageProcessor::Direction, shared_ptr<Image>> ImageProcessor::process(
     string out_path = out_dir_ + "/" + filename;
     auto out_image = image->copyTo(out_path);
     output_nesw_image[image_pair.first] = out_image;
+    LOG(INFO) << "Image is copied to " << out_path;
   }
 
   return output_nesw_image;
